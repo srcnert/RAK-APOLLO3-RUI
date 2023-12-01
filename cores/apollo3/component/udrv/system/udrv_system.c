@@ -105,7 +105,11 @@ void udrv_destroy_thread(char *name)
 void udrv_destroy_myself(void)
 {
 #ifdef SUPPORT_MULTITASK
+    #ifndef rak11720
     uhal_sched_destroy_thread(current_thread);
+    #else
+    uhal_sched_destroy_myself();
+    #endif
 #endif
 }
 
