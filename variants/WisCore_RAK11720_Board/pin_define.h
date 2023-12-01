@@ -30,8 +30,8 @@
 #define SWDIO                   PA13
 #define SWCLK                   PA14
 
-#define UART0_TXD_PIN           PIN_SERIAL0_TX
-#define UART0_RXD_PIN           PIN_SERIAL0_RX
+#define UART0_TXD_PIN           22 //PIN_SERIAL0_TX
+#define UART0_RXD_PIN           23 //PIN_SERIAL0_RX
 #define UART1_TXD_PIN           PIN_SERIAL1_TX
 #define UART1_RXD_PIN           PIN_SERIAL1_RX
 #define UART2_TXD_PIN           0xFF

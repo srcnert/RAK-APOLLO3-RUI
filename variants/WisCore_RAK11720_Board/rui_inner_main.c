@@ -46,7 +46,21 @@
 extern service_lora_join_cb service_lora_join_callback;
 #endif
 
+#ifdef SUPPORT_MULTITASK
+#include "uhal_sched.h"
+
+extern bool sched_start;
+extern tcb_ thread_pool[THREAD_POOL_SIZE];
+
+#ifdef SUPPORT_WDT
+extern bool is_custom_wdt;
+#endif
+
+bool no_busy_loop = true;
+
+#else
 bool no_busy_loop = false;
+#endif
 
 static udrv_system_event_t rui_user_app_event = {.request = UDRV_SYS_EVT_OP_USER_APP, .p_context = NULL};
 static bool run_user_app = false;
@@ -100,15 +114,15 @@ void OnTimerEvent()
 }
 #endif
 
-void HardFault_Handler(void)
-{
-    NVIC_SystemReset();
-}
+// void HardFault_Handler(void)
+// {
+//     NVIC_SystemReset();
+// }
 
-void error_fault_handler(uint32_t info)
-{
-    NVIC_SystemReset();
-}
+// void error_fault_handler(uint32_t info)
+// {
+//     NVIC_SystemReset();
+// }
 
 /********************************************************************/
 /* RUI handler functions                                            */
@@ -547,6 +561,54 @@ void rui_running(void)
     udrv_system_event_consume();
 }
 
+#ifdef SUPPORT_MULTITASK
+void rui_system_thread(void)
+{
+    rui_init();
+
+    //user init
+    rui_setup();
+
+#ifdef TOGGLE_LED_PER_SEC
+    udrv_gpio_set_dir(BLUE_LED, GPIO_DIR_OUT);
+    if (udrv_system_timer_create(SYSTIMER_LED, OnTimerEvent, HTMR_PERIODIC) == UDRV_RETURN_OK)
+    {
+        udrv_system_timer_start(SYSTIMER_LED, 1000, NULL);
+    }
+#endif
+
+    /* Search thread pool and resumed */
+    for (int i = 0 ; i < THREAD_POOL_SIZE ; i++) {
+        if (thread_pool[i].valid == true && thread_pool[i].suspended) {
+            uhal_sched_resume(&thread_pool[i]);
+        }
+    }
+
+    while (1) {
+        rui_running();
+        taskYIELD(); // yield to run other task
+        if (service_nvm_get_auto_sleep_time_from_nvm() && uhal_sched_run_queue_empty()) {
+            udrv_sleep_ms(0);
+        }
+    }
+}
+
+void rui_user_thread(void)
+{
+#ifdef WDT_SUPPORT
+    if(!is_custom_wdt) {
+        udrv_wdt_init(WDT_FEED_PERIOD);
+        udrv_wdt_feed();//Consider software reset case, reload WDT counter first.
+    }
+#endif
+
+    while (1) {
+        rui_loop();
+    }
+}
+#endif
+
+#ifndef SUPPORT_MULTITASK
 static void loop_task(void* arg)
 {
     (void) arg;
@@ -614,6 +676,7 @@ static void loop_task(void* arg)
         }
     }
 }
+#endif
 
 // \brief Main entry point of Arduino application
 int main( void )
@@ -663,8 +726,19 @@ int main( void )
     //
     am_hal_rtc_osc_disable();
 
+#ifdef SUPPORT_MULTITASK
+    memset(thread_pool, 0, sizeof(tcb_)*THREAD_POOL_SIZE);
+
+    uhal_sched_create_sys_thread("sys thread", rui_system_thread);
+    uhal_sched_create_thread("usr thread", rui_user_thread);
+
+    uhal_sched_init();
+
+    sched_start = true;
+#else
     // Create a task for loop()
     xTaskCreate(loop_task, "loop", LOOP_STACK_SZ, NULL, RAK_TASK_PRIO_LOW, &_loopHandle);
+#endif
 
     // Start FreeRTOS scheduler.
     vTaskStartScheduler();

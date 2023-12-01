@@ -9,7 +9,7 @@ static am_hal_adc_slot_config_t      ADCSlotConfig;
 static UDRV_ADC_RESOLUTION        uhal_adc_resolution = UDRV_ADC_RESOLUTION_10BIT;
 static UDRV_ADC_MODE              uhal_adc_mode       = UDRV_ADC_MODE_DEFAULT; // Edited by Sercan ERAT
 
-volatile uint8_t is_adc_pin_active[5] = {0,0,0,0,0};
+volatile uint8_t is_adc_pin_active[8] = {0,0,0,0,0,0};
 
 static uint32_t get_apollo_adc_pin(uint32_t pin) {
     switch (pin) {
@@ -28,6 +28,17 @@ static uint32_t get_apollo_adc_pin(uint32_t pin) {
         case 12:
             is_adc_pin_active[4] = true;   
             return AM_HAL_PIN_12_ADCD0NSE9; // ADC9
+        case 34:
+            is_adc_pin_active[5] = true;  
+            return AM_HAL_PIN_34_ADCSE6; // ADC6
+        case 35:
+            is_adc_pin_active[6] = true;  
+            return AM_HAL_PIN_35_ADCSE7; // ADC7
+        case 29:
+            is_adc_pin_active[7] = true;  
+            return AM_HAL_PIN_29_ADCSE1; // ADC7
+        case 255:
+            return 255;
         default: return 3; // AM_HAL_PIN_XX_GPIO
     }
 }
@@ -39,6 +50,10 @@ static am_hal_adc_slot_chan_e get_apollo_slot_channel(uint32_t pin) {
         case 33: return AM_HAL_ADC_SLOT_CHSEL_SE5; // ADC5
         case 13: return AM_HAL_ADC_SLOT_CHSEL_SE8; // ADC8
         case 12: return AM_HAL_ADC_SLOT_CHSEL_SE9; // ADC9
+        case 34: return AM_HAL_ADC_SLOT_CHSEL_SE6; // ADC6
+        case 35: return AM_HAL_ADC_SLOT_CHSEL_SE7; // ADC7
+        case 29: return AM_HAL_ADC_SLOT_CHSEL_SE1; // ADC7
+        case 255: return AM_HAL_ADC_SLOT_CHSEL_BATT; // vBATT
         default: return 0xFF; // AM_HAL_PIN_XX_GPIO
     }
 }
@@ -170,14 +185,17 @@ int32_t uhal_adc_read (uint32_t pin, int16_t *value) {
 
     uint32_t _uFuncSel = get_apollo_adc_pin(pin);
 
-    if(_uFuncSel == 3)
-        return UDRV_WRONG_ARG;
+    if(_uFuncSel != 255)
+    {
+        if(_uFuncSel == 3)
+            return UDRV_WRONG_ARG;
     
-    //
-    // Set a pin to act as our ADC input
-    //
-    g_AM_PIN_ADC.uFuncSel = _uFuncSel;
-    am_hal_gpio_pinconfig(pin, g_AM_PIN_ADC);
+        //
+        // Set a pin to act as our ADC input
+        //
+        g_AM_PIN_ADC.uFuncSel = _uFuncSel;
+        am_hal_gpio_pinconfig(pin, g_AM_PIN_ADC);    
+    }
 
     uint32_t slot_number = 0;
 
@@ -308,7 +326,22 @@ void uhal_adc_suspend (void) {
         is_adc_pin_active[4] = false;
         am_hal_gpio_pinconfig(12, g_AM_HAL_GPIO_DISABLE);
     }
-
+    if(is_adc_pin_active[5] == true)
+    {
+        is_adc_pin_active[5] = false;
+        am_hal_gpio_pinconfig(34, g_AM_HAL_GPIO_DISABLE);
+    }
+    if(is_adc_pin_active[6] == true)
+    {
+        is_adc_pin_active[6] = false;
+        am_hal_gpio_pinconfig(35, g_AM_HAL_GPIO_DISABLE);
+    }
+    if(is_adc_pin_active[7] == true)
+    {
+        is_adc_pin_active[7] = false;
+        am_hal_gpio_pinconfig(29, g_AM_HAL_GPIO_DISABLE);
+    }
+    
     //
     // Initialize the ADC and get the handle.
     //
