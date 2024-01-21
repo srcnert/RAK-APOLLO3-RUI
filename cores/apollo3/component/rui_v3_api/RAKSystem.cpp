@@ -306,9 +306,10 @@ bool RAKSystem::scheduler::task::destroy(char *name) {
 bool RAKSystem::scheduler::task::destroy(void) {
 #ifdef SUPPORT_MULTITASK
     udrv_destroy_myself();
-#else
-    no_busy_loop = true;
 #endif
+
+    no_busy_loop = true;
+
     return true;
 }
 

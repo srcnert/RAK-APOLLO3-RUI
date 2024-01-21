@@ -2499,7 +2499,7 @@ typedef __uint_least64_t uint_least64_t;
 #define configTICK_RATE_HZ 1000
 #define configMAX_PRIORITIES 5
 #define configMINIMAL_STACK_SIZE (256)
-#define configTOTAL_HEAP_SIZE (66 * 1024)
+#define configTOTAL_HEAP_SIZE (100 * 1024)
 #define configMAX_TASK_NAME_LEN 16
 #define configUSE_16_BIT_TICKS 0
 #define configIDLE_SHOULD_YIELD 1

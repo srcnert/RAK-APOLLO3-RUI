@@ -236,10 +236,10 @@ int At_TransparentMode(SERIAL_PORT port, char *cmd, stParam *param)
             return AT_NO_NETWORK_JOINED;
         }
 
-        if ((old_mode = service_nvm_get_mode_type_from_nvm(port)) != SERVICE_MODE_TYPE_TRANSPARENT)
+        if ((old_mode = service_nvm_get_mode_type_from_nvm(port)) != SERVICE_MODE_TYPE_CUSTOM)
         {
             atcmd_printf("OK\r\n");
-            if ((ret = service_nvm_set_mode_type_to_nvm(port, SERVICE_MODE_TYPE_TRANSPARENT)) != UDRV_RETURN_OK)
+            if ((ret = service_nvm_set_mode_type_to_nvm(port, SERVICE_MODE_TYPE_CUSTOM)) != UDRV_RETURN_OK)
             {
                 return AT_ERROR;
             }

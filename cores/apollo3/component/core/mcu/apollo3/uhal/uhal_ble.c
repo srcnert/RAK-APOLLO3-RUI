@@ -1769,7 +1769,7 @@ void uhal_ble_stack_init(void)
         //
         // Create the functional tasks
         //
-        xTaskCreate(RadioTask, "RadioTask", 512, 0, RAK_TASK_PRIO_HIGH, &radio_task_handle);
+        xTaskCreate(RadioTask, "RadioTask", 512, 0, RAK_TASK_PRIO_HIGHEST, &radio_task_handle);
 
         is_ble_stack_initialized = true;
     }

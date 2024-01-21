@@ -39,4 +39,7 @@ void uhal_mcu_suspend(void);
 bool uhal_mcu_sleep_status(void);
 void uhal_mcu_consume_event(void);
 
+void uhal_mcu_set_rx_interrupt(void);
+void uhal_mcu_clear_rx_interrupt(void);
+
 #endif  // #ifndef _UHAL_POWERSAVE_H_

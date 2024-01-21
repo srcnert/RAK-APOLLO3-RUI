@@ -56,7 +56,7 @@ extern tcb_ thread_pool[THREAD_POOL_SIZE];
 extern bool is_custom_wdt;
 #endif
 
-bool no_busy_loop = true;
+bool no_busy_loop = false;
 
 #else
 bool no_busy_loop = false;

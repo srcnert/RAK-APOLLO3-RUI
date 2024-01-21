@@ -102,6 +102,8 @@ unsigned long millis();
  */
 unsigned long micros();
 
+unsigned long seconds();
+
 unsigned long systick_micros();
 
 

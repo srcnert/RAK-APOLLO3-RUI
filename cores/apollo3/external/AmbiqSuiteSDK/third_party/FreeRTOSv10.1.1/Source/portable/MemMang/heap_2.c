@@ -2505,7 +2505,7 @@ typedef __uint_least64_t uint_least64_t;
 #define configTICK_RATE_HZ 1000
 #define configMAX_PRIORITIES 5
 #define configMINIMAL_STACK_SIZE (256)
-#define configTOTAL_HEAP_SIZE (66 * 1024)
+#define configTOTAL_HEAP_SIZE (100 * 1024)
 #define configMAX_TASK_NAME_LEN 16
 #define configUSE_16_BIT_TICKS 0
 #define configIDLE_SHOULD_YIELD 1
@@ -4067,7 +4067,7 @@ static void prvHeapInit( void );
 
 
 
- static uint8_t ucHeap[ (66 * 1024) ];
+ static uint8_t ucHeap[ (100 * 1024) ];
 
 
 
@@ -4088,7 +4088,7 @@ static BlockLink_t xStart, xEnd;
 
 
 
-static size_t xFreeBytesRemaining = ( (66 * 1024) - 8 );
+static size_t xFreeBytesRemaining = ( (100 * 1024) - 8 );
 # 97 "/home/jenkins/workspace/RUI_Release/rui-v3/external/AmbiqSuiteSDK/third_party/FreeRTOSv10.1.1/Source/portable/MemMang/heap_2.c"
 #define prvInsertBlockIntoFreeList(pxBlockToInsert) { BlockLink_t *pxIterator; size_t xBlockSize; xBlockSize = pxBlockToInsert->xBlockSize; for( pxIterator = &xStart; pxIterator->pxNextFreeBlock->xBlockSize < xBlockSize; pxIterator = pxIterator->pxNextFreeBlock ) { } pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock; pxIterator->pxNextFreeBlock = pxBlockToInsert; }
 # 118 "/home/jenkins/workspace/RUI_Release/rui-v3/external/AmbiqSuiteSDK/third_party/FreeRTOSv10.1.1/Source/portable/MemMang/heap_2.c"
@@ -4126,7 +4126,7 @@ void *pvReturn =
    }
   }
 
-  if( ( xWantedSize > 0 ) && ( xWantedSize < ( (66 * 1024) - 8 ) ) )
+  if( ( xWantedSize > 0 ) && ( xWantedSize < ( (100 * 1024) - 8 ) ) )
   {
 
 
@@ -4253,7 +4253,7 @@ uint8_t *pucAlignedHeap;
  xStart.xBlockSize = ( size_t ) 0;
 
 
- xEnd.xBlockSize = ( (66 * 1024) - 8 );
+ xEnd.xBlockSize = ( (100 * 1024) - 8 );
  xEnd.pxNextFreeBlock = 
 # 264 "/home/jenkins/workspace/RUI_Release/rui-v3/external/AmbiqSuiteSDK/third_party/FreeRTOSv10.1.1/Source/portable/MemMang/heap_2.c" 3 4
                        ((void *)0)
@@ -4263,6 +4263,6 @@ uint8_t *pucAlignedHeap;
 
 
  pxFirstFreeBlock = ( void * ) pucAlignedHeap;
- pxFirstFreeBlock->xBlockSize = ( (66 * 1024) - 8 );
+ pxFirstFreeBlock->xBlockSize = ( (100 * 1024) - 8 );
  pxFirstFreeBlock->pxNextFreeBlock = &xEnd;
 }

@@ -83,7 +83,7 @@ int32_t uhal_sched_create_thread(char *name, function task) {
             tcb->name,
             TASK_STACK_SIZE,
             NULL,
-            RAK_TASK_PRIO_LOW,
+            RAK_TASK_PRIO_HIGH,
             &tcb->task
         );
 
